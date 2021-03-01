@@ -8,8 +8,8 @@ esphome:
     - "soil.h"
 
 wifi:
-  ssid: "Lillen4"
-  password: "tilda?4321"
+  ssid: "ABC123"
+  password: "abc123"
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -23,10 +23,10 @@ logger:
 
 # Enable Home Assistant API
 api:
-  password: "tilda4321"
+  password: "abc123"
 
 ota:
-  password: "tilda4321"
+  password: "abc123"
 
 i2c:
   sda: 21
