@@ -1,0 +1,87 @@
+esphome:
+  name: soil1
+  platform: ESP32
+  board: lolin_d32
+  includes:
+    - "Adafruit_seesaw.h"
+    - "Adafruit_seesaw.cpp"
+    - "soil.h"
+    - "veml7700_custom_sensor.h"
+#    - "Adafruit_VEML7700.h"
+#    - "Adafruit_VEML7700.cpp"
+    
+  libraries:
+    - "https://github.com/adafruit/Adafruit_VEML7700" 
+
+wifi:
+  ssid: "ABC"
+  password: "abc"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Soil1 Fallback Hotspot"
+    password: "pYRX6HHZYbes"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: "abcd"
+
+ota:
+  password: "abcd"
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: True
+
+#Polling 15 sec set in soil.h
+
+sensor:  
+#Soil sensor
+  - platform: custom
+    lambda: |-
+      auto soil_comp = new SOIL();
+      App.register_component(soil_comp);
+      return {soil_comp->temperature_sensor, soil_comp->humidity_sensor};
+    sensors:
+    - name: "Soil Temperature"
+      unit_of_measurement: °C
+      accuracy_decimals: 2
+    - name: "Soil Humidity"
+      accuracy_decimals: 2
+
+#Lux sensor
+  - platform: custom
+    lambda: |-
+      auto veml7700 = new VEML7700CustomSensor();
+      App.register_component(veml7700);
+      return {veml7700, veml7700->lux_sensor, veml7700->white_sensor, veml7700->als_sensor};
+    sensors:
+    - name: "VEML7700 Light" # Required dummy sensor
+    - name: "VEML770 Lux"
+      unit_of_measurement: Lux
+      accuracy_decimals: 2
+    - name: "VEML770 White"
+      unit_of_measurement: raw
+      accuracy_decimals: 0
+    - name: "VEML770 ALS"
+      unit_of_measurement: raw
+      accuracy_decimals: 0
+      
+# pressure, etc.
+  - platform: bme280
+    #i2c_id: bus_a
+    temperature:
+      name: "BME280 Temperature"
+      oversampling: 16x
+    pressure:
+      name: "BME280 Pressure"
+    humidity:
+      name: "BME280 Humidity"
+    address: 0x76
+    update_interval: 60s      
